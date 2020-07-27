@@ -1,5 +1,5 @@
 <template>
-  <div class="log">登陆</div>
+  <div class="list">list</div>
 </template>
 
 <script>

@@ -1,7 +1,7 @@
 <template>
   <div class="layout">
       主布局
-      <router-view></router-view>
+      <router-view/>
   </div>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="index">index</div>
+  <div class="index">888</div>
 </template>
 
 <script>
