@@ -1,5 +1,5 @@
 <template>
-  <div class="index">888</div>
+  <div class="index">后台首页</div>
 </template>
 
 <script>

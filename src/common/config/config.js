@@ -10,10 +10,12 @@ export default {
           {
             icon: "el-icon-s-home",
             name: "后台首页",
+            pathname:"index"
           },
           {
             icon: "el-icon-s-claim",
             name: "商品列表",
+            pathname:"shop_goods_list"
           },
         ],
       },
@@ -24,6 +26,7 @@ export default {
           {
             icon: "el-icon-s-claim",
             name: "商品列表",
+            pathname:"shop_goods_list"
           },
         ],
       },
