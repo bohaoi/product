@@ -32,7 +32,7 @@
       <el-container style="height:100%;">
         <!--侧边布局-->
         <el-aside width="200px">
-          <el-menu default-active="0" @select="slideSelect" style="height:100%">
+          <el-menu :default-active="slideMenuActive" @select="slideSelect" style="height:100%">
             <el-menu-item
               :index="index|numToString"
               v-for="(item,index) in slideMenus"
@@ -43,11 +43,12 @@
             </el-menu-item>
           </el-menu>
         </el-aside>
-        <el-main>
+
+
+        <el-main class="bg-light">
           <!--面包屑导航-->
 
-          <div class="border-bottom mb-3" 
-          v-if="bran.length>0" style="padding:20px;margin:-20px">
+          <div class="border-bottom mb-3 bg-white" v-if="bran.length>0" style="padding:20px;margin:-20px">
             <el-breadcrumb separator-class="el-icon-arrow-right">
               <el-breadcrumb-item
                 v-for="(item,index) in bran"
@@ -56,8 +57,24 @@
               >{{item.title}}</el-breadcrumb-item>
             </el-breadcrumb>
           </div>
-         	<!-- 主内容 -->
-				<router-view></router-view>
+          <!-- 主内容 -->
+          <router-view></router-view>
+
+          <div style="height:2000px"></div>
+
+          <el-backtop target=".el-main" :bottom="100">
+            <!-- <div
+              style="
+                height: 100%;
+                width: 100%;
+                background-color: #f2f5f6;
+                box-shadow: 0 0 6px rgba(0,0,0, .12);
+                text-align: center;
+                line-height: 40px;
+                color: #1989fa;
+                "
+            >UP</div> -->
+          </el-backtop>
         </el-main>
       </el-container>
     </el-container>
@@ -86,7 +103,7 @@ export default {
     this.__initNavBar();
   },
   watch: {
-    '$route'(to, from) {
+    $route(to, from) {
       // 本地存储
       localStorage.setItem(
         "navActive",
@@ -144,7 +161,7 @@ export default {
       this.slideMenuActive = "0";
       if (this.slideMenus.length > 0) {
         this.$router.push({
-          name:this.slideMenus[this.slideMenuActive].pathname
+          name: this.slideMenus[this.slideMenuActive].pathname,
         });
       }
     },
@@ -152,7 +169,7 @@ export default {
       this.slideMenuActive = key;
       // 跳转到指定页面
       this.$router.push({
-        name: this.slideMenus[key].pathname
+        name: this.slideMenus[key].pathname,
       });
     },
   },
