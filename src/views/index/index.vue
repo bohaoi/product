@@ -33,8 +33,7 @@
             <el-button style="float:right;padding:5px 0" type>{{tip.desc}}</el-button>
           </div>
           <div class="row">
-            <div :class="tip.list.length|getCol" 
-            v-for="(tlist,listi) in tip.list" :key="listi">
+            <div :class="tip.list.length|getCol" v-for="(tlist,listi) in tip.list" :key="listi">
               <button class="btn btn-light w-100">
                 <h4 class="mb-1">{{tlist.value}}</h4>
                 <small class="text-muted">{{tlist.name}}</small>
@@ -45,25 +44,108 @@
       </el-col>
 
       <!--统计图-->
-      	<el-col :span="12">
-				<el-card class="box-card" style="height: 370px;" 
-				shadow="never">
-					<div slot="header" class="clearfix">
-						<span>卡片名称</span>
-						<el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
-					</div>
-					<div class="text item"></div>
-				</el-card>
-			</el-col>
-		</el-row>
+      <el-col :span="12">
+        <el-card class="box-card" style="height: 370px;" shadow="never">
+          <div slot="header" class="clearfix">
+            <span>卡片名称</span>
+            <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+          </div>
+
+          <!--统计容器图-->
+          <div ref="myChart" style="width:100%;height:270px"></div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <!--销售情况统计 | 单品销售排名-->
+    <el-row :gutter="20" class="my-3">
+      <!--销售统计-->
+      <el-col :span="12">
+        <el-card class="box-card" shadow="never">
+          <div slot="header" class="clearfix">
+            <span>销售情况统计</span>
+            <el-button style="float:right;padding:9px 7px">按周期统计商家店铺的订单量和订单金额</el-button>
+          </div>
+
+          <div style="height:200px">
+            <div class="media align-items-center border">
+            <span class="py-4 px-3 bg-light border-right">昨日销售</span>
+            <div class="media-body">
+              <div class="border-bottom pl-3 pb-1 mb-1">
+                <span>订单金额</span>
+                9800
+              </div>
+              <div class="pl-3">
+                <span>订单量(件)</span>
+                5
+              </div>
+            </div>
+          </div>
+
+          <div class="media align-items-center border mt-3">
+            <span class="py-4 px-3 bg-light border-right">今日销售</span>
+            <div class="media-body">
+              <div class="border-bottom pl-3 pb-1 mb-1">
+                <span>订单金额</span>
+                7900
+              </div>
+              <div class="pl-3">
+                <span>订单量(件)</span>
+                3
+              </div>
+            </div>
+          </div>
+          </div>
+        </el-card>
+      </el-col>
+
+      <!--单品销售-->
+      <el-col :span="12">
+        <el-card class="box-card" shadow="never">
+          <div slot="header" class="clearfix">
+            <span>单品销售排名</span>
+            <el-button style="float:right;padding:9px 7px" type="text">按周期统计商家店铺的订单量和订单金额</el-button>
+          </div>
+          <el-table :data="tableData" height="200px" border style="width: 100%">
+            <el-table-column type="index" label="#" width="50"></el-table-column>
+
+            <el-table-column prop="name" label="商品信息"></el-table-column>
+
+            <el-table-column prop="num" label="销量" width="50"></el-table-column>
+          </el-table>
+        </el-card>
+      </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
+import echarts from "echarts";
 export default {
   data() {
     return {
+      tableData: [
+        {
+          name: "小天鹅（LittleSwan）滚筒洗衣机...",
+          num: "9",
+        },
+        {
+          name: "小天鹅（LittleSwan）滚筒洗衣机...",
+          num: "9",
+        },
+        {
+          name: "小天鹅（LittleSwan）滚筒洗衣机...",
+          num: "9",
+        },
+        {
+          name: "小天鹅（LittleSwan）滚筒洗衣机...",
+          num: "9",
+        },
+        {
+          name: "小天鹅（LittleSwan）滚筒洗衣机...",
+          num: "9",
+        },
+      ],
       counts: [
         {
           icon: "el-icon-user-solid",
@@ -119,6 +201,100 @@ export default {
   filters: {
     getCol(total) {
       return `col-${12 / total}`;
+    },
+  },
+  //dom渲染完
+  mounted() {
+    //画统计图
+    this.drawLine();
+  },
+  methods: {
+    drawLine() {
+      //初始化echarts实例
+      let myChart = echarts.init(this.$refs.myChart);
+
+      //配置参数
+      myChart.setOption({
+        title: {},
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "cross",
+            label: {
+              backgroundColor: "#6a7985",
+            },
+          },
+        },
+        legend: {
+          data: ["邮件营销", "联盟广告", "视频广告", "直接访问", "搜索引擎"],
+        },
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
+        },
+        grid: {
+          left: "3%",
+          right: "4%",
+          bottom: "3%",
+          containLabel: true,
+        },
+        xAxis: [
+          {
+            type: "category",
+            boundaryGap: false,
+            data: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+          },
+        ],
+        yAxis: [
+          {
+            type: "value",
+          },
+        ],
+        series: [
+          {
+            name: "邮件营销",
+            type: "line",
+            stack: "总量",
+            areaStyle: {},
+            data: [120, 132, 101, 134, 90, 230, 210],
+          },
+          {
+            name: "联盟广告",
+            type: "line",
+            stack: "总量",
+            areaStyle: {},
+            data: [220, 182, 191, 234, 290, 330, 310],
+          },
+          {
+            name: "视频广告",
+            type: "line",
+            stack: "总量",
+            areaStyle: {},
+            data: [150, 232, 201, 154, 190, 330, 410],
+          },
+          {
+            name: "直接访问",
+            type: "line",
+            stack: "总量",
+            areaStyle: { normal: {} },
+            data: [320, 332, 301, 334, 390, 330, 320],
+          },
+          {
+            name: "搜索引擎",
+            type: "line",
+            stack: "总量",
+            label: {
+              normal: {
+                show: true,
+                position: "top",
+              },
+            },
+            areaStyle: { normal: {} },
+            data: [820, 932, 901, 934, 1290, 1330, 1320],
+          },
+        ],
+      });
     },
   },
 };
