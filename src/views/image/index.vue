@@ -31,26 +31,16 @@
         <el-aside width="200px" style="position:absolute;top:60px;left:0;bottom:60px;">
           <!--侧边 | 相册列表-->
           <ul class="list-group list-group-flush">
-            <li
-              class="list-group-item list-group-item-action d-flex aligin-items-center"
-              style="cursor:pointer"
+            <album-item
               v-for="(item,index) in albums"
               :key="index"
-              :class="{'active sum-active':albumIndex === index}"
-              @click.stop="albumChange(index)"
-            >
-              {{item.name}}
-              <el-dropdown class="ml-auto">
-                <span class="btn btn-light btn-sm border" style="width:56px;">
-                  {{item.num}}
-                  <i class="el-icon-arrow-down el-icon--right"></i>
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item @click.stop.native="openAlbumModel({item,index})">修改</el-dropdown-item>
-                  <el-dropdown-item @click.stop.native="albumDel(index)">删除</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </li>
+              :item="item"
+              :index="index"
+              :active="albumIndex === index"
+              @change="albumChange"
+              @edit="openAlbumModel"
+              @del="albumDel"
+            ></album-item>
           </ul>
         </el-aside>
         <el-container>
@@ -81,7 +71,12 @@
 </template>
 
 <script>
+import albumItem from "../../components/image/album-item.vue";
+
 export default {
+  components: {
+    albumItem,
+  },
   data() {
     return {
       searchForm: {
