@@ -45,7 +45,60 @@
         </el-aside>
         <el-container>
           <el-main style="position:absolute;top:60px;left:200px;bottom:60px;right:0;">
-            <div style="height:1000px;"></div>
+            <!--主内容-->
+            <el-row :gutter="10">
+              <el-col
+                :span="24"
+                :lg="4"
+                :md="6"
+                :sm="8"
+                v-for="(item,index) in imageList"
+                :key="index"
+              >
+                <el-card
+                  class="box-card mb-3 position-relative"
+                  style="cursor:pointer;"
+                  :body-style="{'padding':'0'}"
+                  shadow="hover"
+                >
+
+                  <div class="border"
+                  :class="{'border-danger': item.ischeck}"
+                    >
+                    <span class="badge badge-danger" style="position:absolute;top:0;right:0;" v-if="item.ischeck">1</span>
+                    <img :src="item.url" class="w-100" style="height:100px" @click="choose(item)" />
+                    <div
+                      class="w-100 text-white px-1"
+                      style="background:rgba(0,0,0,0.5);margin-top:-25px;position:absolute"
+                    >
+                      <span class="small">{{item.name}}</span>
+                    </div>
+                    <div class="p-2 text-center">
+                      <el-button-group>
+                        <el-button
+                          icon="el-icon-view"
+                          size="mini"
+                          style="padding:10px"
+                          @click="previewImage(item)"
+                        ></el-button>
+                        <el-button
+                          icon="el-icon-edit"
+                          size="mini"
+                          style="padding:10px"
+                          @click="imageEdit(item,index)"
+                        ></el-button>
+                        <el-button
+                          icon="el-icon-delete"
+                          size="mini"
+                          style="padding:10px"
+                          @click="imageDel(index)"
+                        ></el-button>
+                      </el-button-group>
+                    </div>
+                  </div>
+                </el-card>
+              </el-col>
+            </el-row>
           </el-main>
         </el-container>
       </el-container>
@@ -87,6 +140,13 @@
         </el-upload>
       </div>
     </el-dialog>
+
+    <!--预览图片-->
+    <el-dialog :visible.sync="previewModel" width="60vw" top="5vh">
+      <div style="margin:-60px -20px -30px -20px;">
+        <img :src="previewUrl" class="w-100" />
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -117,12 +177,21 @@ export default {
         order: 0,
       },
       albums: [],
+      previewModel: false,
+      previewUrl: "",
+      imageList: [
+        
+      ],
     };
   },
   created() {
     this.__init();
   },
   methods: {
+    //选择图片
+    choose(item){
+      item.ischeck = !item.ischeck;
+    },
     __init() {
       for (var i = 0; i < 20; i++) {
         this.albums.push({
@@ -131,7 +200,16 @@ export default {
           order: 0,
         });
       }
+      for(i=0;i<30;i++){
+        this.imageList.push({
+          url:
+            "https://tangzhe123-com.oss-cn-shenzhen.aliyuncs.com/Appstatic/qsbk/demo/datapic/40.jpg",
+          name: "图片",
+          ischeck:false
+        },)
+      }
     },
+    
     //切换相册
     albumChange(index) {
       this.albumIndex = index;
@@ -192,6 +270,34 @@ export default {
           message: "删除成功!",
         });
       });
+    },
+    //预览图片
+    previewImage(item) {
+      this.previewUrl = item.url;
+      this.previewModel = true;
+    },
+    //编辑图片
+    imageEdit(item, index) {
+      this.$prompt("请输入新名称", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputValue: item.name,
+        inputValidator(val) {
+          if (val === "") {
+            return "图片名称不能为空";
+          }
+        },
+      }).then(({ value }) => {
+        item.name = value;
+        this.$message({
+          type: "success",
+          message: "修改成功 ",
+        });
+      });
+    },
+    //删除图片
+    imageDel(index) {
+      return this.imageList.splice(index, 1);
     },
   },
 };
