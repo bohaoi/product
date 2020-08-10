@@ -61,11 +61,12 @@
                   :body-style="{'padding':'0'}"
                   shadow="hover"
                 >
-
-                  <div class="border"
-                  :class="{'border-danger': item.ischeck}"
-                    >
-                    <span class="badge badge-danger" style="position:absolute;top:0;right:0;" v-if="item.ischeck">1</span>
+                  <div class="border" :class="{'border-danger': item.ischeck}">
+                    <span
+                      class="badge badge-danger"
+                      style="position:absolute;top:0;right:0;"
+                      v-if="item.ischeck"
+                    >{{item.checkOrder}}</span>
                     <img :src="item.url" class="w-100" style="height:100px" @click="choose(item)" />
                     <div
                       class="w-100 text-white px-1"
@@ -179,9 +180,8 @@ export default {
       albums: [],
       previewModel: false,
       previewUrl: "",
-      imageList: [
-        
-      ],
+      imageList: [],
+      chooseList: [],
     };
   },
   created() {
@@ -189,8 +189,42 @@ export default {
   },
   methods: {
     //选择图片
-    choose(item){
-      item.ischeck = !item.ischeck;
+    choose(item) {
+      //选中(+1)
+      if (!item.ischeck) {
+        //加入选中
+        this.chooseList.push({ id: item.id, url: item.url });
+        //计算序号
+        item.checkOrder = this.chooseList.length;
+        item.ischeck = true;
+        return;
+      }
+
+
+      //取消选中(-1)
+      //找到在chooseList中的索引
+      let i = this.chooseList.findIndex((v) => v.id === item.id);
+      if (i === -1) return;
+      //重新计算序号
+      let length = this.chooseList.length;
+      //取消选中的中间部门
+      if (i+1 < length) {
+        //重新计算imageList选中的序号
+        for (let j = i; j < length; j++) {
+          let no = this.imageList.findIndex(
+            (v) => v.id === this.chooseList[j].id
+          );
+          if (no > -1) {
+            this.imageList[no].checkOrder--;
+          }
+        }
+      }
+      //删除
+      this.chooseList.splice(i, 1);
+      //修改状态
+      item.ischeck = false;
+      //重置序号
+      item.checkOrder = 0;
     },
     __init() {
       for (var i = 0; i < 20; i++) {
@@ -200,16 +234,18 @@ export default {
           order: 0,
         });
       }
-      for(i=0;i<30;i++){
+      for (i = 0; i < 30; i++) {
         this.imageList.push({
+          id: i,
           url:
             "https://tangzhe123-com.oss-cn-shenzhen.aliyuncs.com/Appstatic/qsbk/demo/datapic/40.jpg",
           name: "图片",
-          ischeck:false
-        },)
+          ischeck: false,
+          checkOrder: 0,
+        });
       }
     },
-    
+
     //切换相册
     albumChange(index) {
       this.albumIndex = index;
