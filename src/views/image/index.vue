@@ -23,6 +23,7 @@
           ></el-input>
           <el-button type="success" size="mini">搜索</el-button>
         </div>
+        <el-button type="warning" @click="unChoose" v-if="chooseList.length" size="mini">取消选中</el-button>
         <el-button type="danger" @click="imageDel({all:true})" size="mini">批量删除</el-button>
         <el-button type="success" @click="openAlbumModel(false)" size="mini">创建相册</el-button>
         <el-button type="warning" size="mini" @click="uploadModel = true">上传图片</el-button>
@@ -205,13 +206,29 @@ export default {
       previewUrl: "",
       imageList: [],
       chooseList: [],
-      currentPage:1
+      currentPage: 1,
     };
   },
   created() {
     this.__init();
   },
   methods: {
+    //取消选中
+    unChoose() {
+      this.imageList.forEach((img) => {
+        //找到选中的图片
+        let i = this.chooseList.findIndex((item) => {
+          return item.id === img.id;
+        });
+        if (i > -1) {
+          //取消选中样式,排序归零
+          img.ischeck = false;
+          img.checkOrder = 0;
+          //从chooseList中移除
+          this.chooseList.splice(i, 1);
+        }
+      });
+    },
     //选择图片
     choose(item) {
       //选中(+1)
