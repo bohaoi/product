@@ -23,6 +23,7 @@
           ></el-input>
           <el-button type="success" size="mini">搜索</el-button>
         </div>
+        <el-button type="danger" @click="imageDel({all:true})" size="mini">批量删除</el-button>
         <el-button type="success" @click="openAlbumModel(false)" size="mini">创建相册</el-button>
         <el-button type="warning" size="mini" @click="uploadModel = true">上传图片</el-button>
       </el-header>
@@ -92,7 +93,7 @@
                           icon="el-icon-delete"
                           size="mini"
                           style="padding:10px"
-                          @click="imageDel(index)"
+                          @click="imageDel({index:index})"
                         ></el-button>
                       </el-button-group>
                     </div>
@@ -200,7 +201,6 @@ export default {
         return;
       }
 
-
       //取消选中(-1)
       //找到在chooseList中的索引
       let i = this.chooseList.findIndex((v) => v.id === item.id);
@@ -208,7 +208,7 @@ export default {
       //重新计算序号
       let length = this.chooseList.length;
       //取消选中的中间部门
-      if (i+1 < length) {
+      if (i + 1 < length) {
         //重新计算imageList选中的序号
         for (let j = i; j < length; j++) {
           let no = this.imageList.findIndex(
@@ -239,7 +239,7 @@ export default {
           id: i,
           url:
             "https://tangzhe123-com.oss-cn-shenzhen.aliyuncs.com/Appstatic/qsbk/demo/datapic/40.jpg",
-          name: "图片",
+          name: "图片" + i,
           ischeck: false,
           checkOrder: 0,
         });
@@ -332,9 +332,30 @@ export default {
       });
     },
     //删除图片
-    imageDel(index) {
-      return this.imageList.splice(index, 1);
+    imageDel(obj) {
+      this.$confirm("是否删除该图片", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        //批量删除
+        if (obj.all) {
+          let list = this.imageList.filter((img) => {
+            return !this.chooseList.some((c) => c.id === img.id);
+          });
+          this.imageList = list;
+          this.chooseList = [];
+        } else {
+          //单个删除
+          this.imageList.splice(obj.index, 1);
+        }
+        this.$message({
+          type: "success",
+          message: "删除成功!",
+        });
+      });
     },
+    
   },
 };
 </script>
